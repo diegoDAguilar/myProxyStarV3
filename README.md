@@ -91,6 +91,7 @@ as proxySTAR.go, I am including a cert and key in the Github, but they may be ou
 *****************SIMULATION GUIDE*****************
 
 HOW TO RUN A FULL SIMULATION
+
 0. If you have restarted the server VM and want to ask for new certificates or mainly if some error happens but it is not fatal for the CA (if it is still UP), then
 go to the proxy and execute: "sudo rm -rf /etc/letsencrypt"
 1. In the server go to ~/gopath/src/github.com/letsencrypt/boulder
