@@ -27,7 +27,7 @@ everything must be inside letsencrypt/boulder/, if you do an "ls" in letsencrypt
 - Install GO and set environment variable PATH to /usr/local/go/bin. My version ($go version)  "go1.8.1 linux/amd64"
 - Fully install Docker and Docker-Compose: https://docs.docker.com/compose/install/ just follow the steps and test that the hello-world image works. I m using version 17.03.1-ce for Docker and version 1.12.0 for Docker-Compose.
 - Go to boulder/test/config/va.json and make sure your port config in va is : 80 for httpPort, 5001 for httpsPort and 5001 for tlsPort.(Some of these changes may be redundant, but this way it works, so don't ask ;) )
-- Go to boulder/docker-compose.yml and check that in the list of ports you have 80:80 and 443:443 (these 2 steps are already done if you download my repo, do them if you are using common Boulder)
+- Go to boulder/docker-compose.yml and check that in the list of ports you have 80:80 and 443:443, be careful not to tab as it is an illegal char (these 2 steps are already done if you download my repo, do them if you are using common Boulder)
 - Back in boulder/docker-compose.yml change the FAKE_DNS field to the IP of the VM that will act as your server.
 - Set ufw status to inactive: sudo ufw disable
 - Check your iptables policy: "sudo iptables -L" and set CHAIN FORWARD policy to accept if it is currently in DROP mode: "sudo iptables -P FORWARD ACCEPT"
