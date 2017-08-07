@@ -1,7 +1,10 @@
 Contents of this file:
-Installation Guide --> How to set up the environment
-Simulation Guide --> Obtain a STAR certificate yourself
-Round-Trips Guide --> In depth explanation of every step in STAR
+
+-Installation Guide --> How to set up the environment
+
+-Simulation Guide --> Obtain a STAR certificate yourself
+
+-Round-Trips Guide --> In depth explanation of every step in STAR
 
 
 
