@@ -4,8 +4,7 @@ Simulation Guide --> Obtain a STAR certificate yourself
 Round-Trips Guide --> In depth explanation of every step in STAR
 
 
-IMPORTANT: This just follows the execution. To install the proxy, do a simulation yourself or see
-			other notes read first the InstallationGuide :)
+
 
 Parts involved in STAR:
 1.Boulder/STAR Server
@@ -50,18 +49,18 @@ Prepare the Proxy:
 - Host some website. This is the site for which we are gonna request the certificates. The way I did it is using Apache (e.g. bye.com):
 	1. Place an html file in /var/www/bye.com/html/bye.html. An example could be:
 
-<!DOCTYPE html PUBLIC "-//IETF//DTD HTML 2.0//EN">
-<HTML>
- <HEAD>
-		<TITLE>
-			 A Small bye placed in 192.168.122.125 PROXY
-		</TITLE>
- </HEAD>
-<BODY>
- <H1>Bye</H1>
- <P>This is a very minimal "bye bye cruel world" HTML document.</P>
-</BODY>
-</HTML>
+	<!DOCTYPE html PUBLIC "-//IETF//DTD HTML 2.0//EN">
+	<HTML>
+	 <HEAD>
+			<TITLE>
+				 A Small bye placed in 192.168.122.125 PROXY
+			</TITLE>
+	 </HEAD>
+	<BODY>
+	 <H1>Bye</H1>
+	 <P>This is a very minimal "bye bye cruel world" HTML document.</P>
+	</BODY>
+	</HTML>
 
 	2. Go to /etc/apache2/sites-available and copy a file called 000-default.conf in the same directory as bye.com.conf: "sudo cp 000-default.conf bye.com.conf"
 	3. Open this new file and make sure VirtualHost in the first line is set to *:80 and the rest of the fields look like this (although ServerAdmin isn't important for now so leave it out if you want):
@@ -139,7 +138,8 @@ You will see a message: "Proxy STAR status in middlebox is: ACTIVE"
 		See its contents:
 		"cat CSR.csr"
 
-		And copy it into a new file following the format above. Dont forget to add lifetime and validity at the end and "\n" after each row. I ll remove this asap so it less tedious.
+		And copy it into a new file following the format above. Dont forget to add lifetime and validity at the end and "\n" 	
+		after each row. I ll remove this asap so it less tedious.
 
 7. After the client executes the command in step 6 it will get a message similar to this one:
 "Location: https://certProxy/star/registration/0"
@@ -194,10 +194,11 @@ Time 1:
 			as plain text, keeping a copy in the file tmpCsr, that will be deleted afterwards.
 
 			Back in parseJsonPOST it uses the csr (now a string) as a parameter for func parseFieldsOfCsr.
-			This function shall retrieve the domain contained in the csr field of the already mentioned struct and returns it as a string called subjectName.
+			This function shall retrieve the domain contained in the csr field of the already mentioned struct and returns
+			it as a string called subjectName.
 
-			At this point in time, the proxy has info about: domain, lifetime and validity and has validated that both lifetime and validity are OK so it
-			sends back the URL where the info about the certificate will be posted:
+			At this point in time, the proxy has info about: domain, lifetime and validity and has validated that both
+			lifetime and validity are OK so it sends back the URL where the info about the certificate will be posted:
 
 			Location: https://certProxy/star/registration/$ID
 
@@ -219,7 +220,8 @@ Time 2:
 			It uses cerbotCall.sh to do the execution.
 
 	Proxy: Certbot
-			Normal execution of the Certbot client with csr as a parameter but with 4 extra fields sent in the POST to Boulder added in acme/acme/client.py and messages.py.
+			Normal execution of the Certbot client with csr as a parameter but with 4 extra fields sent in the POST to
+			Boulder added in acme/acme/client.py and messages.py.
 			These fields are:
 			{recurrent_cert_uuid,
 			recurrent,
@@ -231,16 +233,20 @@ Time 2:
 			recurrent_cert_validity: validity for STAR certificates
 			recurrent_cert_lifetime: contains the lifetime, so it is key for renewal
 
-			When certbot is called it checks if file the tmp files with the STAR information exist, if so, it then reads the these files, deletes them and
-			sends them to Boulder in the same certificate request.
+			When certbot is called it checks if file the tmp files with the STAR information exist, if so, it then reads the
+			these files, deletes them and sends them to Boulder in the same certificate request.
 
 	Boulder: wfe.go
-			If Boulder function verifyPOST reads field "recurrent: true" in the Json sent by Certbot then it starts STAR. It reads all the recurrent fields and saves them into temporary files and finally to a directory with these features:
-				The main directory is "./starCerts" and will be created in the same directory where Boulder is. This means, in my case it is in:
+			If Boulder function verifyPOST reads field "recurrent: true" in the Json sent by Certbot then it starts STAR. It
+			reads all the recurrent fields and saves them into temporary files and finally to a directory with these
+			features:
+				The main directory is "./starCerts" and will be created in the same directory where Boulder is. This
+				means, in my case it is in:
 
 				~/gopath/src/github.com/letsencrypt/boulder/starCerts
 
-				In ./starCerts files with the cert uuid as its name will be created, inside each file the info for the certificate renewal will be storaged:
+				In ./starCerts files with the cert uuid as its name will be created, inside each file the info for the
+				certificate renewal will be storaged:
 
 				certificate.pem
 				csr
@@ -248,14 +254,18 @@ Time 2:
 
 				Why lifetime isn't in this file will be explained later.
 
-			Before the csr is saved, STAR function repairCsr will make sure the csr is valid for future operations. The reason why this is a MUST is because at this point the csr has lost its base64 format and has lost the noninformation bits(stuffing).
+			Before the csr is saved, STAR function repairCsr will make sure the csr is valid for future operations. The
+			reason why this is a MUST is because at this point the csr has lost its base64 format and has lost the
+			noninformation bits(stuffing).
 
 
 			After this operation, server operations continue as normal, forwarding the csr until it reaches the CA.
 
 	Boulder: ca.go
 
-			When the time to create the certificate comes, function issueCertificate looks for the temporary files created in wfe.go and if it finds them, it issues a short-term certificate. If it doesn't find it, duration is set to 3 months.
+			When the time to create the certificate comes, function issueCertificate looks for the temporary files created
+			in wfe.go and if it finds them, it issues a short-term certificate. If it doesn't find it, duration is set to 3
+			months.
 
 			WARNING: In case the config file is set to other value it won't read it.
 
@@ -290,7 +300,9 @@ Time 3:
 		uri: The uri where the STAR certificates are posted (unique for each certificate)
 		validity: validity of every STAR
 
-		Keeping these files isn't NEEDED for STAR but because the Proxy is the real owner of the domains, it is considered that knowing what name delegations are active is key. What's more, keeping the uri will allow the DNO to terminate the renewals.
+		Keeping these files isn't NEEDED for STAR but because the Proxy is the real owner of the domains, it is considered that
+		knowing what name delegations are active is key. What's more, keeping the uri will allow the DNO to terminate the
+		renewals.
 
 Time 4:
 
@@ -309,18 +321,22 @@ Time 5:
 
 		CA: renewalManager.go
 			The renewal manager is running in the CA background.
-			It tries to read file "./renewMTmp/renew1" every 10 seconds (this time can be modified in function checkStatus) and adds a cronjob that will execute itself every 24h and will look like this:
+			It tries to read file "./renewMTmp/renew1" every 10 seconds (this time can be modified in function checkStatus)
+			and adds a cronjob that will execute itself every 24h and will look like this:
 
-			50 8 * * * sh /home/acme-server2/gopath/src/github.com/letsencrypt/boulder/exeAutoRenew.sh  bye7.com 04 08 6d53bdbb-beed-41d5-ae12-fe71bfe71b880ea26
+			50 8 * * * sh /home/acme-server2/gopath/src/github.com/letsencrypt/boulder/exeAutoRenew.sh  bye7.com 04 08 
+			6d53bdbb-beed-41d5-ae12-fe71bfe71b880ea26
 
 			The first 5 parameters ensure the 24h execution at 8:50 everyday.
 			The next one is a script: exeAutoRenew.sh that executes with 4 parameters:
 			{domain, day and month when the lifetime expires(NOTE: it is the STAR lifetime, not a cert's lifetime), uri}
 
 		CA: exeAutoRenew.sh
-			This script first checks if its day&month arguments match the current day, if they match, it deletes the cronjob that executes this script every 24h.
+			This script first checks if its day&month arguments match the current day, if they match, it deletes the cronjob
+			that executes this script every 24h.
 			If they don't match, it means certificate's lifetime hasn't expired and will renew the cert.
-			The cert is renew using openssl with all the parameters that had been saved so a new certificate will be generated.
-			The most important part of this new issued certificate is that it contains the same key Boulder uses and that is located
-			in boulder/test/test-ca.key
+			The cert is renew using openssl with all the parameters that had been saved so a new certificate will be
+			generated.
+			The most important part of this new issued certificate is that it contains the same key Boulder uses and that is
+			located in boulder/test/test-ca.key
 
