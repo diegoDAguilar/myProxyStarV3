@@ -60,7 +60,7 @@ Prepare the Proxy:
 	 <H1>Bye</H1>
 	 <P>This is a very minimal "bye bye cruel world" HTML document.</P>
 	</BODY>
-	</HTML>```
+	</HTML>
 
 	2. Go to /etc/apache2/sites-available and copy a file called 000-default.conf in the same directory as bye.com.conf: "sudo cp 000-default.conf bye.com.conf"
 	3. Open this new file and make sure VirtualHost in the first line is set to *:80 and the rest of the fields look like this (although ServerAdmin isn't important for now so leave it out if you want):
